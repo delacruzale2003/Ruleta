@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =======================================
+   1. Definiciones de Fuentes Personalizadas
+   ======================================= */
+
+/* Montserrat-Regular (Peso 400) */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400; /* Regular */
+  font-style: normal;
+  font-display: swap; /* Para mejor rendimiento de carga */
+}
+
+/* Montserrat-Medium (Peso 500) */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/Montserrat-Medium.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Montserrat-Bold (Peso 700) */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700; /* Bold */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Montserrat-ExtraBold (Peso 800) */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/Montserrat-ExtraBold.ttf') format('truetype');
+  font-weight: 800; /* ExtraBold */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BetterWith-Narrow';
+  src: url('./assets/BetterWith-Narrow.ttf') format('truetype');
+  font-weight: 200; /* Puedes ajustar el peso si lo conoces */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Markpro';
+  src: url('./assets/MarkPro.ttf') format('truetype');
+  font-weight: 200; /* Puedes ajustar el peso si lo conoces */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('./assets/Teko-VariableFont_wght.ttf') format('truetype');
+  font-weight: 700; /* Puedes ajustar el peso si lo conoces */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =======================================
+   2. Clases de Utilidad Personalizadas
+   ======================================= */
+
+/* Creamos clases para aplicar cada peso de forma explícita */
+.font-mont-regular {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+}
+
+.font-mont-medium {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+}
+
+.font-mont-bold {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}
+
+.font-mont-extrabold {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+}
+
+.font-betterwith {
+  font-family: 'BetterWith-Narrow', sans-serif;
+  font-weight: 400;
+}
+.font-markpro {
+  font-family: 'Markpro', sans-serif;
+  font-weight: 400;
+}
+.font-teko {
+  font-family: 'Teko', sans-serif;
+  font-weight: 400;
+}
+/* =======================================
+   3. Definición de la Animación (RESTAURADA)
+   ======================================= */
+
+/* Define la animación para el efecto flotante vertical */
+@keyframes float-vertical {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px); /* Eleva 15px */
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.float-animation-slow {
+  animation: float-vertical 6s ease-in-out infinite; /* 6 segundos, suave e infinito */
+}
