@@ -371,7 +371,7 @@ const sortedData = useMemo(() => {
  // Se recalcula si cambia la data o el criterio
     return (
     <div className="h-full flex flex-col items-center justify-start p-6">
-        <div className="w-full flex justify-between items-center mb-6 max-w-4xl">
+        <div className="w-full block justify-between items-center mb-6 max-w-4xl">
             <h1 className="text-3xl font-mont-bold">Tiendas y Premios</h1>
             <div className="flex gap-4">
                 {/* --- NUEVOS BOTONES DE ORDENAMIENTO --- */}

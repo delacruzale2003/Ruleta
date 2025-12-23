@@ -1,86 +1,58 @@
 import React, { useRef } from "react";
 import {
-  IconTrash,
-  IconPencil,
-  IconCopy,
-  IconDownload
+  IconTrash,
+  IconPencil,
+  IconExternalLink, // <--- CAMBIO: Importamos este icono en lugar de IconCopy
+  IconDownload
 } from "@tabler/icons-react"; 
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeCanvas } from 'qrcode.react';
 
-// Tipado actualizado para coincidir con la interfaz Store de Tienda.tsx
 interface TableItem {
-  id: string; // Corregido: de _id a id
-  name: string; // Corregido: de nombre a name
-  available_prizes_count: number; // Campo que muestra el total de premios disponibles
+  id: string; 
+  name: string; 
+  available_prizes_count: number; 
 }
 
 interface TableWithActionsProps {
-  // Usamos la nueva interfaz TableItem
-  data: TableItem[]; 
-  // onEdit y onDelete deben usar la nueva clave 'id' y 'name'
-  onEdit: (item: TableItem) => void;
-  onDelete: (id: string) => void;
-    isActionLoading?: boolean;
+  data: TableItem[]; 
+  onEdit: (item: TableItem) => void;
+  onDelete: (id: string) => void;
+  isActionLoading?: boolean;
 }
 
 const TableWithActions: React.FC<TableWithActionsProps> = ({
-  data,
-  onEdit,
-  onDelete,
-isActionLoading = false,
+  data,
+  onEdit,
+  onDelete,
+  isActionLoading = false,
 }) => {
-  const qrRefs = useRef<Record<string, HTMLCanvasElement | null>>({});
-  // Asumimos que esta variable existe en tu .env o Vite config
-  const baseUrl = import.meta.env.VITE_BASE_URL || "https://cocacolanavidadpromo.ptm.pe"; 
+  const qrRefs = useRef<Record<string, HTMLCanvasElement | null>>({});
+  const baseUrl = import.meta.env.VITE_BASE_URL || "https://cocacolanavidadpromo.ptm.pe"; 
 
-  // Reemplazamos alert() por una función que simule una notificación
-  const notify = (msg: string) => {
-    // En un entorno de producción de React, usarías un hook de notificaciones o un componente modal
-    console.log(msg); 
-    alert(msg); // Usamos alert() temporalmente para la prueba rápida
-  };
+  const notify = (msg: string) => {
+    console.log(msg); 
+    alert(msg); 
+  };
 
-  const handleCopy = (id: string) => {
-    // La URL apunta al dominio y la ruta con el ID de la tienda
-    const url = `${baseUrl}/${id}`; 
-    // Usamos document.execCommand('copy') como fallback seguro en entornos restringidos
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url)
-        .then(() => notify(`🔗 Link copiado:\n${url}`))
-        .catch(() => notify("❌ Error al copiar (Intente usar el botón de descarga)"));
-    } else {
-      // Fallback para entornos antiguos/restringidos (ej. algunos iFrames)
-      const textarea = document.createElement('textarea');
-      textarea.value = url;
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        notify(`🔗 Link copiado:\n${url}`);
-      } catch (err) {
-        notify("❌ Error al copiar el link. No se pudo usar execCommand.");
-      }
-      document.body.removeChild(textarea);
-    }
-  };
+  // <--- CAMBIO: Se eliminó la función 'handleCopy' completa ya que no se usará.
 
-  const handleDownloadQR = (id: string, name: string) => {
-    const canvas = qrRefs.current[id];
-    if (!canvas) {
+  const handleDownloadQR = (id: string, name: string) => {
+    const canvas = qrRefs.current[id];
+    if (!canvas) {
         notify("❌ Error: QR no generado en el canvas.");
         return;
     }
 
-    const pngUrl = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = pngUrl;
-    const safeName = name.replace(/\s+/g, "_").toLowerCase();
-    link.download = `qr-${safeName}.png`;
-    link.click();
-  };
+    const pngUrl = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = pngUrl;
+    const safeName = name.replace(/\s+/g, "_").toLowerCase();
+    link.download = `qr-${safeName}.png`;
+    link.click();
+  };
 
-  return (
+  return (
     <div className="overflow-x-auto bg-gray-100 shadow-lg rounded-lg m-4 p-2 w-full max-w-4xl">
       <table className="min-w-full table-auto">
         <thead>
@@ -110,7 +82,7 @@ isActionLoading = false,
                     {/* Botón EDITAR */}
                     <button
                       onClick={() => onEdit(item)}
-                      disabled={isActionLoading} // <--- USO DE LA VARIABLE
+                      disabled={isActionLoading} 
                       className={`text-white p-2 rounded-md transition ${
                         isActionLoading 
                           ? "bg-gray-400 cursor-not-allowed" 
@@ -121,10 +93,10 @@ isActionLoading = false,
                       <IconPencil size={20} />
                     </button>
                     
-                    {/* Botón ELIMINAR/DESACTIVAR */}
+                    {/* Botón ELIMINAR */}
                     <button
                       onClick={() => onDelete(item.id)}
-                      disabled={isActionLoading} // <--- USO DE LA VARIABLE
+                      disabled={isActionLoading} 
                       className={`text-white p-2 rounded-md transition ${
                         isActionLoading 
                           ? "bg-gray-400 cursor-not-allowed" 
@@ -135,24 +107,24 @@ isActionLoading = false,
                       <IconTrash size={20} />
                     </button>
                     
-                    {/* Botón COPIAR */}
+                    {/* <--- CAMBIO PRINCIPAL AQUÍ (Botón IR A LINK) */}
                     <button
-                      onClick={() => handleCopy(item.id)}
-                      disabled={isActionLoading} // <--- USO DE LA VARIABLE
+                      onClick={() => window.open(url, '_blank')} // Abre nueva pestaña
+                      disabled={isActionLoading} 
                       className={`text-gray-800 p-2 rounded-md transition ${
                         isActionLoading 
                           ? "bg-gray-400 cursor-not-allowed" 
                           : "bg-yellow-400 hover:bg-yellow-500"
                       }`}
-                      title={isActionLoading ? "Cargando..." : "Copiar link de tienda"}
+                      title={isActionLoading ? "Cargando..." : "Ir a la tienda"} // Tooltip actualizado
                     >
-                      <IconCopy size={20} />
+                      <IconExternalLink size={20} /> {/* Icono actualizado */}
                     </button>
                     
                     {/* Botón DESCARGAR QR */}
                     <button
                       onClick={() => handleDownloadQR(item.id, item.name)}
-                      disabled={isActionLoading} // <--- USO DE LA VARIABLE
+                      disabled={isActionLoading} 
                       className={`text-white p-2 rounded-md transition ${
                         isActionLoading 
                           ? "bg-gray-400 cursor-not-allowed" 
@@ -163,7 +135,7 @@ isActionLoading = false,
                       <IconDownload size={20} />
                     </button>
 
-                    {/* QR oculto para descarga */}
+                    {/* QR oculto */}
                     <div className="hidden">
                       <QRCodeCanvas
                         value={url}
