@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"; 
 import { useRegistration } from "../hooks/useRegistration";
-import { X, Fan, LifeBuoy, Disc, Gift, Settings, Gamepad2 } from 'lucide-react'; 
+import {  Fan, LifeBuoy, Disc, Gift, Settings, Gamepad2 } from 'lucide-react'; 
 
 const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
