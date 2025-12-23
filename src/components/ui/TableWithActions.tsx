@@ -2,8 +2,7 @@ import React, { useRef } from "react";
 import {
   IconTrash,
   IconPencil,
-  IconExternalLink, // <--- CAMBIO: Importamos este icono en lugar de IconCopy
-  IconDownload
+  
 } from "@tabler/icons-react"; 
 import { Play } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,27 +30,11 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({
   const qrRefs = useRef<Record<string, HTMLCanvasElement | null>>({});
   const baseUrl = import.meta.env.VITE_BASE_URL || "https://cocacolanavidadpromo.ptm.pe"; 
 
-  const notify = (msg: string) => {
-    console.log(msg); 
-    alert(msg); 
-  };
+  
 
   // <--- CAMBIO: Se eliminó la función 'handleCopy' completa ya que no se usará.
 
-  const handleDownloadQR = (id: string, name: string) => {
-    const canvas = qrRefs.current[id];
-    if (!canvas) {
-        notify("❌ Error: QR no generado en el canvas.");
-        return;
-    }
-
-    const pngUrl = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = pngUrl;
-    const safeName = name.replace(/\s+/g, "_").toLowerCase();
-    link.download = `qr-${safeName}.png`;
-    link.click();
-  };
+  
 
   return (
     <div className="overflow-x-auto bg-gray-100 shadow-lg rounded-lg m-4 p-2 w-full max-w-4xl">
