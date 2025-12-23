@@ -139,7 +139,7 @@ const EditStoreModal: React.FC<EditStoreModalProps> = ({
                         exit={{ scale: 0.95, opacity: 0, y: 20 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <h2 className="text-2xl mb-6 font-bold text-gray-800 text-center">
+                        <h2 className="text-xl mb-4 font-bold text-gray-800 text-center">
                             Editar Tienda: {data.name}
                         </h2>
 
@@ -151,7 +151,7 @@ const EditStoreModal: React.FC<EditStoreModalProps> = ({
 
                         <form onSubmit={handleSubmit} className="space-y-5 text-sm">
                             {/* Nombre de la tienda */}
-                            <div className="text-start">
+                            <div className="text-start flex">
                                 <label className="font-semibold text-gray-700 block mb-1 ml-1">
                                     Nombre de la tienda
                                 </label>
@@ -159,92 +159,111 @@ const EditStoreModal: React.FC<EditStoreModalProps> = ({
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full p-2.5 px-4 border border-gray-300 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
+                                    className="w-full ml-2 p-2.5 px-4 border border-gray-300 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
                                     required
                                 />
                             </div>
 
-                            {/* Total de premios (Automático) */}
-                            <div className="text-start">
-                                <label className="font-semibold text-gray-700 block mb-1 ml-1">
-                                    Total premios disponibles
+                            {/* --- SECCIÓN SUPERIOR: RESUMEN --- */}
+<div className="flex justify-between items-center mb-6 p-2 bg-blue-50/50 rounded-xl border border-blue-100">
+    <div>
+        <h3 className="text-sm font-bold text-gray-800">Gestionar Premios</h3>
+        
+    </div>
+    
+    {/* Total calculado (Estilo Badge/Stat) */}
+    <div className="text-right">
+        <span className="block text-xs font-medium text-gray-500">Total Premios</span>
+        <span className="text-xl font-black text-blue-600">{totalCalculado}</span>
+    </div>
+</div>
+
+{/* --- LISTA DE PREMIOS (Expandida) --- */}
+<div className="flex-1 overflow-hidden flex flex-col min-h-[300px]"> 
+    
+    {loading ? (
+        <div className="flex-1 flex items-center justify-center text-gray-500">
+            Cargando premios...
+        </div>
+    ) : prizes.length === 0 ? (
+        <div className="p-6 text-center bg-gray-50 rounded-xl border border-dashed border-gray-300 text-gray-500">
+            No hay premios asignados a esta tienda.
+        </div>
+    ) : (
+        <div className="flex-1 overflow-y-auto pr-2 space-y-3">
+            {prizes.map((pr) => (
+                <div 
+                    key={pr.id} 
+                    className="group p-2 border border-gray-200 rounded-xl bg-white hover:border-blue-300 hover:shadow-sm transition-all"
+                >
+                    {/* Layout GRID: Nombre a la izq, Inputs a la derecha */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                        
+                        {/* Columna 1: Nombre (Ocupa 4 espacios) */}
+                        <div className="md:col-span-4">
+                            <p className="text-gray-800 font-bold text-base">{pr.nombre}</p>
+                            
+                        </div>
+
+                        {/* Columna 2: Inputs (Ocupa 8 espacios) */}
+                        <div className="md:col-span-8 grid grid-cols-2 gap-3">
+                            
+                            {/* Input Stock Inicial */}
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-500 mb-1.5 ml-1">
+                                    Stock Inicial
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="number"
-                                        value={totalCalculado} 
-                                        readOnly 
-                                        className="w-full p-2.5 px-4 border border-gray-200 bg-gray-100 rounded-xl text-gray-600 font-bold cursor-not-allowed focus:outline-none"
+                                        min="0"
+                                        value={pr.stock_inicial}
+                                        onChange={(e) => handlePrizeChange(pr.id, "stock_inicial", e.target.value)}
+                                        className="w-full pl-3 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 font-medium focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-center"
                                     />
-                                    <span className="absolute right-4 top-2.5 text-xs text-gray-400 font-medium">
-                                        Calculado
-                                    </span>
                                 </div>
                             </div>
 
-                            {/* Lista de Premios */}
-                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                <p className="font-bold text-lg text-gray-800 mb-3 border-b pb-2">Premios existentes</p>
-                                
-                                {loading ? (
-                                    <div className="text-center py-4 text-gray-600">Cargando premios...</div>
-                                ) : (
-                                    prizes.length === 0 ? (
-                                            <div className="p-3 bg-yellow-100 text-yellow-800 rounded-lg">No hay premios asignados a esta tienda.</div>
-                                        ) : (
-                                        <div className="max-h-48 overflow-y-auto pr-2">
-                                            {prizes.map((pr) => (
-                                                <div key={pr.id} className="mb-4 p-3 border border-gray-200 rounded-lg bg-white">
-                                                    <p className="text-gray-800 font-bold mb-2 text-sm">{pr.nombre}</p>
-                                                    <div className="flex gap-3">
-                                                        <div className="flex-1 text-start">
-                                                            <label className="block text-xs font-medium text-gray-500 mb-1">Stock inicial</label>
-                                                            <input
-                                                                type="number"
-                                                                min="0"
-                                                                value={pr.stock_inicial}
-                                                                onChange={(e) =>
-                                                                    handlePrizeChange(pr.id, "stock_inicial", e.target.value)
-                                                                }
-                                                                className="w-full p-2 border border-gray-300 rounded-lg text-gray-800 text-center"
-                                                            />
-                                                        </div>
-                                                        <div className="flex-1 text-start">
-                                                            <label className="block text-xs font-medium text-gray-500 mb-1">Stock disponible</label>
-                                                            <input
-                                                                type="number"
-                                                                min="0"
-                                                                value={pr.stock_disponible}
-                                                                onChange={(e) =>
-                                                                    handlePrizeChange(pr.id, "stock_disponible", e.target.value)
-                                                                }
-                                                                className="w-full p-2 border border-gray-300 rounded-lg text-gray-800 font-medium text-center"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )
-                                )}
+                            {/* Input Stock Disponible */}
+                            <div>
+                                <label className="block text-xs font-semibold text-blue-600 mb-1.5 ml-1">
+                                    Disponible
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={pr.stock_disponible}
+                                        onChange={(e) => handlePrizeChange(pr.id, "stock_disponible", e.target.value)}
+                                        className="w-full pl-3 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-center"
+                                    />
+                                </div>
                             </div>
 
-                            {/* Botones de acción */}
-                            <div className="flex justify-end space-x-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    className="px-5 py-2.5 bg-white border border-gray-300 rounded-full text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-6 py-2.5 rounded-full font-bold text-white shadow-md bg-black hover:bg-gray-700 transition-colors"
-                                >
-                                    Guardar Cambios
-                                </button>
-                            </div>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )}
+</div>
+
+{/* --- FOOTER: BOTONES --- */}
+<div className="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-3 bg-white sticky bottom-0 z-10">
+    <button
+        type="button"
+        onClick={onClose}
+        className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50 hover:text-gray-900 transition-colors"
+    >
+        Cancelar
+    </button>
+    <button
+        type="submit"
+        className="px-8 py-2.5 rounded-xl font-bold text-white shadow-lg shadow-blue-500/30 bg-black hover:bg-gray-800 transform active:scale-95 transition-all"
+    >
+        Guardar Cambios
+    </button>
+</div>
                         </form>
                     </motion.div>
                 </motion.div>
