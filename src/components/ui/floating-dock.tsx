@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+
 
 import {
   AnimatePresence,
@@ -9,6 +9,7 @@ import {
   useTransform,
 } from "motion/react";
 import { useRef, useState } from "react";
+import { cn } from "../../lib/utils";
 
 // Componente principal de FloatingDock
 export const FloatingDock = ({
