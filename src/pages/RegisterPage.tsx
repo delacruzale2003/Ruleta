@@ -10,7 +10,7 @@ const RegisterPage: React.FC = () => {
     
     const activeStoreId = paramStoreId || searchParams.get("store");
 
-    const [showTermsModal, setShowTermsModal] = useState(true);
+    
     const [rotation, setRotation] = useState(0);
     const [isSpinning, setIsSpinning] = useState(false);
     const [winningId, setWinningId] = useState<number | null>(null);
@@ -154,25 +154,36 @@ const RegisterPage: React.FC = () => {
 
             {/* BOTÓN CENTRAL (Logo) - Se mantiene igual */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-                <button
-                    onClick={onSpinClick}
-                    disabled={isSpinning || loading || !activeStoreId}
-                    className={`
-                        w-33 h-33 rounded-full bg-gray-200 border-4 border-white shadow-lg
-                        flex items-center justify-center transition-transform hover:scale-105 active:scale-95
-                        ${isSpinning ? 'opacity-95 cursor-default' : 'animate-pulse cursor-pointer'}
-                    `}
-                >
-                    {loading ? (
-                        <span className="text-xs text-white">...</span>
-                    ) : (
-                        <img 
-                            src="/sdlogo.png" 
-                            alt="GO" 
-                            className="w-21 h-21 object-contain" 
-                        />
-                    )}
-                </button>
+                <style>{`
+    @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    .animate-heartbeat {
+        animation: heartbeat 1.5s infinite ease-in-out;
+    }
+`}</style>
+
+<button
+    onClick={onSpinClick}
+    disabled={isSpinning || loading || !activeStoreId}
+    // Aplicamos la animación 'heartbeat' solo cuando NO está girando
+    className={`
+        w-33 h-33 rounded-full bg-gray-200 border-4 border-white shadow-lg
+        flex items-center justify-center transition-transform hover:scale-110 active:scale-95
+        ${isSpinning ? 'cursor-default' : 'cursor-pointer animate-heartbeat'}
+    `}
+>
+    {loading ? (
+        <span className="text-xs text-black font-bold">...</span>
+    ) : (
+        <img 
+            src="/sdlogo.png" 
+            alt="GO" 
+            className="w-21 h-21 object-contain" 
+        />
+    )}
+</button>
             </div>
         </div>
         
@@ -213,28 +224,7 @@ const RegisterPage: React.FC = () => {
             </div>
         )}
 
-        {showTermsModal && (
-            <div className="fixed inset-0 bg-gray-900/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-3xl p-6 w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl">
-                    <div className="flex justify-between items-center mb-4 border-b pb-2">
-                        <h2 className="text-2xl font-black text-gray-800 uppercase italic">Términos y Condiciones</h2>
-                        <button onClick={() => setShowTermsModal(false)} className="text-gray-500 hover:text-red-500">
-                            <X size={28} />
-                        </button>
-                    </div>
-                    <div className="flex-grow overflow-y-auto text-gray-600 text-sm space-y-3 pr-2 scrollbar-thin scrollbar-thumb-orange-500">
-                        <p><strong>Vigencia:</strong> Hasta el 31 de enero del 2026.</p>
-                        </div>
-                    <button
-                        onClick={() => setShowTermsModal(false)}
-                        className="mt-4 w-full py-3 rounded-xl text-white font-bold text-xl shadow-md transition-transform active:scale-95"
-                        style={{ backgroundColor: BRAND_ORANGE }}
-                    >
-                        ACEPTAR
-                    </button>
-                </div>
-            </div>
-        )}
+        
     </div>
 );
 };

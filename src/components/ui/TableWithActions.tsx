@@ -5,6 +5,7 @@ import {
   IconExternalLink, // <--- CAMBIO: Importamos este icono en lugar de IconCopy
   IconDownload
 } from "@tabler/icons-react"; 
+import { Play } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeCanvas } from 'qrcode.react';
 
@@ -109,31 +110,20 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({
                     
                     {/* <--- CAMBIO PRINCIPAL AQUÍ (Botón IR A LINK) */}
                     <button
-                      onClick={() => window.open(url, '_blank')} // Abre nueva pestaña
-                      disabled={isActionLoading} 
-                      className={`text-gray-800 p-2 rounded-md transition ${
-                        isActionLoading 
-                          ? "bg-gray-400 cursor-not-allowed" 
-                          : "bg-yellow-400 hover:bg-yellow-500"
-                      }`}
-                      title={isActionLoading ? "Cargando..." : "Ir a la tienda"} // Tooltip actualizado
-                    >
-                      <IconExternalLink size={20} /> {/* Icono actualizado */}
-                    </button>
+    onClick={() => window.open(url, '_blank')}
+    disabled={isActionLoading}
+    className={`text-white p-2 rounded-md transition shadow-sm ${
+        isActionLoading 
+            ? "bg-gray-400 cursor-not-allowed" 
+            : "bg-green-500 hover:bg-green-600 hover:shadow-md" // Verde Play
+    }`}
+    title={isActionLoading ? "Cargando..." : "Jugar / Ir a tienda"}
+>
+    {/* fill="currentColor" hace que el triángulo quede relleno */}
+    <Play size={20} fill="currentColor" /> 
+</button>
                     
-                    {/* Botón DESCARGAR QR */}
-                    <button
-                      onClick={() => handleDownloadQR(item.id, item.name)}
-                      disabled={isActionLoading} 
-                      className={`text-white p-2 rounded-md transition ${
-                        isActionLoading 
-                          ? "bg-gray-400 cursor-not-allowed" 
-                          : "bg-purple-400 hover:bg-purple-500"
-                      }`}
-                      title={isActionLoading ? "Cargando..." : "Descargar QR"}
-                    >
-                      <IconDownload size={20} />
-                    </button>
+                    
 
                     {/* QR oculto */}
                     <div className="hidden">

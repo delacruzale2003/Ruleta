@@ -405,16 +405,16 @@ export default function Tienda() {
             )}
 
             {/* NAVBAR INFERIOR CORREGIDO */}
-            <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-4">
+            <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-2">
 
                 {/* Botón JUGAR */}
                 <button
                     // 5. CAMBIO: Usamos la función que verifica si hay storeId
                     onClick={handleGoHome} 
-                    className="flex items-center gap-1 px-6 py-3 rounded-full bg-red-600 text-white font-black shadow-lg transform transition-transform active:scale-95 border-2 border-white/20 hover:bg-red-500"
+                    className="flex items-center gap-1 px-4 py-1 rounded-full bg-red-600 text-white font-black shadow-lg transform transition-transform active:scale-95 border-2 border-white/20 hover:bg-red-500"
                 >
                     <Gamepad2 size={24} />
-                    <span>JUEGA AQUI</span>
+                    <span>VOLVER</span>
                 </button>
 
                 {/* Botón SETTINGS */}
