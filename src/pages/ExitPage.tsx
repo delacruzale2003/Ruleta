@@ -44,7 +44,7 @@ const ExitPage: React.FC = () => {
                     </h1>
                     
                     <p className="text-white text-lg font-light mb-6">
-                        Te has convertido en dueño de:
+                        Has ganado:
                     </p>
 
                     <div className="bg-white rounded-xl p-6 shadow-inner mb-6 transform rotate-1">
