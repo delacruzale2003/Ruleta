@@ -201,10 +201,7 @@ const RegisterPage: React.FC = () => {
                         </div>
                         <div className="flex-grow overflow-y-auto text-gray-600 text-sm space-y-3 pr-2 scrollbar-thin scrollbar-thumb-orange-500">
                             <p><strong>Vigencia:</strong> Hasta el 31 de enero del 2026.</p>
-                            <p><strong>Mecánica:</strong> Compra 2 latas de Monster en OXXO, escanea el QR y gana.</p>
-                            <p><strong>Premios:</strong> Teclados, Mouses, Headsets y Sillas Gamer.</p>
-                            <p><strong>Nota:</strong> Guarda tu comprobante físico para reclamar.</p>
-                        </div>
+                            </div>
                         <button
                             onClick={() => setShowTermsModal(false)}
                             className="mt-4 w-full py-3 rounded-xl text-white font-bold text-xl shadow-md transition-transform active:scale-95"

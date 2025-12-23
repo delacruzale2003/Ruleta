@@ -333,6 +333,8 @@ setData(prevData =>
             setError(`Fallo al cargar datos de edición: ${error.message}`);
         });
     };
+    const BRAND_ORANGE = "#1b5eac"; 
+    const containerStyle = { backgroundColor: BRAND_ORANGE };
     // --- EFECTOS ---
     useEffect(() => {
         fetchData();
@@ -364,15 +366,15 @@ const sortedData = useMemo(() => {
     }
 }, [data, sortBy]);
     // --- RENDERIZADO ---
-    if (loading) return <div className="p-6 text-center text-gray-500">Cargando tiendas...</div>;
-    if (error) return <div className="p-6 text-center text-red-700 bg-red-100 rounded-lg">Error: {error}</div>;
+    if (loading) return <div style={containerStyle} className="p-6 text-center text-gray-500 text-white">Cargando tiendas...</div>;
+    if (error) return <div style={containerStyle} className="p-6 text-center text-red-700 bg-red-100 rounded-lg text-white">Error: {error}</div>;
     const displayMessage = message || error;
     const isSuccess = !!message; // Si hay 'message', es éxito. Si hay 'error', es fallo.
  // Se recalcula si cambia la data o el criterio
     return (
-    <div className="h-full flex flex-col items-center justify-start p-6">
+    <div style={containerStyle} className="h-full flex flex-col items-center justify-start p-6">
         <div className="w-full block justify-between items-center mb-6 max-w-4xl">
-            <h1 className="text-3xl font-mont-bold">Tiendas y Premios</h1>
+            <h1 className="text-3xl font-mont-bold text-white">Tiendas y Premios</h1>
             <div className="flex gap-4">
                 {/* --- NUEVOS BOTONES DE ORDENAMIENTO --- */}
                 <div className="flex bg-gray-100 rounded-lg p-1">
