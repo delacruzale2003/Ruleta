@@ -109,9 +109,13 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="relative z-10 w-80 h-80 sm:w-96 sm:h-96">
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-30">
-                <div className="w-0 h-0 border-l-[20px]  border-white border-l-transparent border-r-[20px] border-r-transparent border-t-[40px] border-t-black drop-shadow-2xl"></div>
-            </div>
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
+    <img 
+        src="/downarrow.png" 
+        alt="Flecha Ganadora" 
+        className="w-20 h-20 object-contain drop-shadow-2xl"
+    />
+</div>
 
             <div className="w-full h-full rounded-full bg-black p-2 shadow-2xl">
                 <div className="w-full h-full rounded-full relative overflow-hidden border-2 border-black" style={wheelStyle}>
