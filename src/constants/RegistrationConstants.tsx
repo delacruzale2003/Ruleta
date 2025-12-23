@@ -8,4 +8,3 @@ export interface RouteParams extends Record<string, string | undefined> {
 // Variables de Configuración (simulando que vienen de .env o Vite)
 export const CAMPAIGN_ID = import.meta.env.VITE_CAMPAIGN;
 export const API_URL = import.meta.env.VITE_API_URL;
-export const UPLOAD_URL = "https://ptm.pe/MonsterPromo/upload.php";

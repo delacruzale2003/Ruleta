@@ -1,63 +1,85 @@
-import { useEffect } from 'react';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { RotateCw } from 'lucide-react'; // Importamos un ícono para "repetir"
 
-
-
-
-const ExitPage = () => {
+const ExitPage: React.FC = () => {
     
-    // Aunque el state no trae datos, lo mantenemos por si acaso.
+    const location = useLocation();
+    const navigate = useNavigate();
     
+    // Recuperamos prizeName y storeId del state
+    const { prizeName, storeId } = location.state || {}; 
 
-    // --- ESTADO LOCAL SIMPLE ---
-    // Ya no necesitamos prizeName ni prizeImageUrl ya que el contenido es estático
-    
-    // Función para volver al inicio
-    
+    const BRAND_ORANGE = "#1b5eac"; 
 
-    // 💡 EFECTO DE LIMPIEZA: Asegura que si alguien llega por URL, tenga un mensaje claro.
-    useEffect(() => {
-        // Podrías añadir lógica aquí si quisieras mostrar un mensaje específico basado en el URL.
-        // Por ahora, solo nos aseguramos de que el navegador no intente navegar de nuevo.
-    }, []); 
+    // Función para volver al inicio manteniendo el storeId
+    const handlePlayAgain = () => {
+    if (storeId) {
+        // CAMBIO: En vez de '?storeId=', usamos la barra '/'
+        navigate(`/${storeId}`); 
+    } else {
+        navigate('/');
+    }
+};
 
     return (
-        // 💡 CORRECCIÓN 2: Deshabilita pull-to-refresh en el móvil.
-        <div className="min-h-screen flex items-center text-center justify-center bg-black p-4 overscroll-y-none">
-            
-            <div className="bg-transparent rounded-2xl p-8 w-full max-w-md space-y-1 text-center mx-auto">
-                
-                {/* 💡 CORRECCIÓN 1: Centrar logo de arriba */}
-                <img
-                        src="/logomonster.png"
-                        alt="logomonster"
-                        className="w-60 h-auto z-10 mx-auto mt-4" 
-                    />
-                
-                {/* 💡 MENSAJE DE REGISTRO EXITOSO */}
-                <h1 className="text-5xl text-white font-semibold font-teko tracking-normal leading-none">
-                    <span className="block">¡GRACIAS!</span>
-                    <span className="block text-xl font-mont-bold">YA ESTÁS PARTICIPANDO</span>
-                </h1>
+        <div 
+            style={{ backgroundColor: BRAND_ORANGE }} 
+            className="min-h-screen flex flex-col items-center justify-center p-4 overscroll-y-none relative font-sans text-center"
+        >
+            <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-10 pointer-events-none"></div>
 
-                {/* Bloque de Contenido */}
-                <div className="p-2 bg-transparent space-y-3">
+            <div className="z-10 w-full max-w-md flex flex-col items-center">
+                
+                <img
+                    src="/logosodimac.png"
+                    alt="logo sodimac"
+                    className="w-48 h-auto mb-8 drop-shadow-md" 
+                />
+                
+                <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 w-full border border-white/20 shadow-2xl">
                     
-                    {/* 💡 IMAGEN FIJA: premios.gif */}
-                    <img 
-                        src="/premios.gif" 
-                        alt="Premios de la Campaña" 
-                        className="mt-1 mx-auto rounded-lg max-w-70 object-contain w-70" 
-                    />
+                    <h1 className="text-4xl text-white font-bold tracking-tight mb-2">
+                        ¡FELICIDADES!
+                    </h1>
                     
-                    
-                    
-                    {/* 💡 CORRECCIÓN 1: Centrar logo de abajo */}
-                    
+                    <p className="text-white text-lg font-light mb-6">
+                        Te has convertido en dueño de:
+                    </p>
+
+                    <div className="bg-white rounded-xl p-6 shadow-inner mb-6 transform rotate-1">
+                        {prizeName ? (
+                            <h2 className="text-3xl sm:text-4xl font-black text-gray-800 uppercase break-words leading-tight">
+                                {prizeName}
+                            </h2>
+                        ) : (
+                            <h2 className="text-xl text-gray-400 font-bold">
+                                PREMIO NO DETECTADO
+                            </h2>
+                        )}
+                    </div>
+
+                    <div className="space-y-2 text-white/90 text-sm mb-6">
+                        <p className="font-medium">
+                            Acércate al módulo de atención para reclamar tu premio.
+                        </p>
+                        <p className="opacity-75 text-xs">
+                            *Recuerda mostrar tu DNI y el comprobante de compra.
+                        </p>
+                    </div>
+
+                    {/* BOTÓN PARA VOLVER A PARTICIPAR */}
+                    <button
+                        onClick={handlePlayAgain}
+                        className="w-full py-3 rounded-xl bg-gray-800 text-white font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95 hover:bg-gray-700"
+                    >
+                        <RotateCw size={20} />
+                        VOLVER A JUGAR
+                    </button>
                 </div>
             </div>
         </div>
     );
 };
-
 
 export default ExitPage;

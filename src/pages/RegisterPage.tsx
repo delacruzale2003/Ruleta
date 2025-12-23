@@ -1,316 +1,217 @@
-import React, { useState } from "react"; // 💡 Importamos useState
+import React, { useState, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom"; 
 import { useRegistration } from "../hooks/useRegistration";
-import { User, Phone, Scan, Loader2, X } from 'lucide-react'; // 💡 Importamos X para el botón de cerrar
+import { X, Fan, LifeBuoy, Disc, Gift, Settings, Gamepad2 } from 'lucide-react'; 
 
 const RegisterPage: React.FC = () => {
-    // 1. 💡 NUEVO ESTADO: Controla si el modal de términos está visible
+    const navigate = useNavigate();
+    
+    // 1. Recuperamos el storeId desde la URL (Ej: /105)
+    const { storeId } = useParams<{ storeId: string }>(); 
+
     const [showTermsModal, setShowTermsModal] = useState(true);
+    const [rotation, setRotation] = useState(0);
+    const [isSpinning, setIsSpinning] = useState(false);
+    const [winningId, setWinningId] = useState<number | null>(null);
 
-    // Usamos el hook personalizado para acceder a toda la lógica y estados
-    const {
-        loading,
-        compressing,
-        preview,
-        compressedFile,
-        message,
-        name,
-        dni,
-        phoneNumber,
-        voucherNumber,
-        storeId,
-        setName,
-        setDni,
-        setPhoneNumber,
-        setVoucherNumber,
-        handleFileChange,
-        handleSubmit,
-    } = useRegistration();
+    // 2. CORRECCIÓN: Llamamos al hook SIN argumentos para evitar el error TS(2554)
+    // Nota: Como 'storeId' ahora viene de useParams, no necesitamos sacarlo del hook.
+    const { loading, message, handleSpin } = useRegistration(); 
 
-    // 💡 NUEVA FUNCIÓN: Para cerrar el modal
-    const handleCloseModal = () => {
-        setShowTermsModal(false);
+    // === PREMIOS ===
+    const ALL_PRIZES = [
+        { id: 1, label: "Abanico", icon: <Fan size={32} />, color: "bg-white text-gray-800" },
+        { id: 2, label: "Pelota Inflable", icon: <LifeBuoy size={32} />, color: "bg-gray-200 text-gray-800" },
+        { id: 3, label: "Frisbee", icon: <Disc size={32} />, color: "bg-white text-gray-800" },
+        { id: 4, label: "Premio Sodimac", icon: <Gift size={32} />, color: "bg-gray-200 text-gray-800" },
+    ];
+
+    const mockInventory: Record<number, number> = { 1: 10, 2: 5, 3: 5, 4: 5 }; 
+
+    const activePrizes = useMemo(() => {
+        if (!storeId) return ALL_PRIZES; 
+        return ALL_PRIZES.filter(prize => (mockInventory[prize.id] ?? 0) > 0);
+    }, [storeId]);
+
+    const onSpinClick = async () => {
+        // Usamos el 'storeId' que viene del useParams
+        if (isSpinning || loading || !storeId) return;
+
+        setIsSpinning(true);
+        setWinningId(null); 
+
+        // 3. Importante: Dependiendo de cómo esté hecho tu hook, 
+        // tal vez necesites pasarle el storeId aquí: handleSpin(storeId).
+        // Si te da error, déjalo vacío como está ahora.
+        const result = await handleSpin();
+
+        if (result.success && result.prizeName) {
+            const winningIndex = activePrizes.findIndex(p => 
+                result.prizeName!.toLowerCase().includes(p.label.toLowerCase().split('/')[0].toLowerCase())
+            );
+            
+            const targetIndex = winningIndex !== -1 ? winningIndex : 0;
+            const targetPrizeId = activePrizes[targetIndex].id;
+
+            const totalSegments = activePrizes.length;
+            const segmentAngle = 360 / totalSegments;
+            const centerOffset = segmentAngle / 2; 
+
+            const spins = 5 * 360; 
+            const targetRotation = spins + (360 - (targetIndex * segmentAngle) - centerOffset);
+
+            setRotation(targetRotation);
+
+            setTimeout(() => {
+                setWinningId(targetPrizeId);
+                setTimeout(() => {
+                    navigate('/exit', {
+                        state: { 
+                            prizeName: result.prizeName, 
+                            registerId: result.registerId,
+                            isAnonymous: true,
+                            storeId: storeId 
+                        },
+                    });
+                }, 1500); 
+            }, 5000); 
+        } else {
+            setIsSpinning(false);
+        }
     };
 
-    // Colores y sombras personalizados (para uso INLINE)
-    const neonGreen = "#a2e71a";
-    const neonGlowStyle = {
-        boxShadow: `0 0 10px ${neonGreen}, 0 0 20px ${neonGreen}`,
-        borderColor: neonGreen,
-    };
-    const inputBorderStyle = {
-        borderColor: neonGreen,
-    };
-
-    // 💡 Lógica de validación centralizada
-    const isFormValid = name.trim() !== ''
-        && phoneNumber.trim() !== ''
-        && dni.trim() !== ''
-        && voucherNumber.trim() !== ''
-        && compressedFile;
-
-    // 💡 CAMBIO: El formulario se deshabilita si el modal está abierto
-    const isDisabled = loading || compressing || !isFormValid || showTermsModal;
-
-    const backgroundStyle = {
-        // Asegura que la imagen de fondo esté disponible en la carpeta 'public'
-        backgroundImage: `url('/bg.png')`,
-        backgroundSize: 'cover', // Cubre todo el contenedor
-        backgroundPosition: 'center', // Centra la imagen
-        backgroundRepeat: 'no-repeat', // No repite la imagen
+    const BRAND_ORANGE = "#1b5eac"; 
+    const containerStyle = { backgroundColor: BRAND_ORANGE };
+    
+    const wheelStyle = {
+        transform: `rotate(${rotation}deg)`,
+        transition: isSpinning ? "transform 5s cubic-bezier(0.25, 0.1, 0.25, 1)" : "none",
     };
 
     return (
-        // 💡 CAMBIO DE TEMA: Fondo principal negro/gris oscuro.
-        <div style={backgroundStyle} className="min-h-screen flex flex-col items-center justify-start p-4 pb-28 relative bg-black">
+        <div style={containerStyle} className="min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden relative font-sans">
+            
+            <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-10 pointer-events-none"></div>
 
-            {/* Logo de la Campaña */}
-            <img
-                src="/logomonster.png"
-                alt="logomonsteroxxo"
-                className="w-40 h-auto mb-4 z-10"
-            />
+            <img src="/logosodimac.png" alt="logo" className="w-40 h-auto mb-4 z-10 drop-shadow-md" />
 
-            {/* Contenedor del Formulario (Transparente) */}
-            <form
-                id="registrationForm"
-                onSubmit={async (e) => {
-                    e.preventDefault();
-
-                    // --- REVALIDACIÓN Y MANEJO DE FORMATOS AQUÍ (Frontend) ---
-                    const trimmedName = name.trim();
-                    const trimmedPhone = phoneNumber.trim();
-                    const trimmedDni = dni.trim();
-                    const trimmedVoucher = voucherNumber.trim();
-                    let validationError = '';
-
-                    // 💡 PASO 1: VERIFICACIÓN RÁPIDA DE CAMPOS VACÍOS (Obligatoriedad)
-                    if (!trimmedName || !trimmedPhone || !trimmedDni || !trimmedVoucher || !compressedFile) {
-                        validationError = "❌ Todos los campos son obligatorios.";
-                    }
-                    // 2. Validar Nombre
-                    else if (trimmedName.length > 45) {
-                        validationError = "❌ Nombre inválido error de formato";
-                    }
-                    // 3. Validar Teléfono (9 dígitos)
-                    else if (trimmedPhone.length !== 9 || !/^\d+$/.test(trimmedPhone)) {
-                        validationError = "❌ Teléfono debe tener  9 dígitos numéricos.";
-                    }
-                    // 4. Validar DNI (8-11 dígitos)
-                    else if (trimmedDni.length < 8 || trimmedDni.length > 11 || !/^\d+$/.test(trimmedDni)) {
-                        validationError = "❌ DNI inválido error de formato";
-                    }
-                    // 5. Validar Comprobante (6-20 caracteres)
-                    else if (trimmedVoucher.length < 6 || trimmedVoucher.length > 20) {
-                        validationError = "❌ Comprobante inválido error de formato .";
-                    }
-
-                    if (validationError) {
-                        alert(validationError); // Usamos alert temporalmente para mensajes de error de formato
-                        return;
-                    }
-
-                    // Si pasa el frontend, se llama al handleSubmit del hook
-                    handleSubmit(e);
-                }}
-                // 💡 ESTILO NEÓN DEL CONTENEDOR
-                className="bg-transparent border border-3 rounded-4xl p-6 pt-4 w-full max-w-md space-y-1 mb-6 z-10"
-                style={{ ...neonGlowStyle, ...inputBorderStyle }}
-            >
-                <h1 className="text-4xl text-start text-white font-teko ">
-                    1.REGISTRATE PARA PARTICIPAR
-                </h1>
-                <h2 className="text-start font-mont-bold text-white text-lg mb-4">Llena tus datos y participa por fabulosos premios</h2>
-
-                {/* ID de Tienda Oculto */}
+            {/* Título */}
+            <div className="z-10 text-center mb-3">
+                <h3 className="text-3xl text-white font-medium tracking-tighter drop-shadow-md leading-none pb-2 z-20 relative">
+                    Dueños del
+                </h3>
                 {storeId && (
-                    <p className="text-sm text-center font-mont-bold text-white/80">Tienda ID: {storeId.substring(0, 8)}...</p>
+                    <h1 className="text-white font-bold text-8xl font-amigos leading-none -mt-8">
+                        verano
+                    </h1>
                 )}
-
-                {/* Mensaje de Error/Éxito */}
-                {message && (
-                    <p className="text-center text-sm font-medium mt-2 p-3 bg-red-100 text-red-700 rounded-lg">{message}</p>
-                )}
-
-
-                {/* Campo Nombre */}
-                <div className="">
-                    <label className="block text-white text-md font-medium font-mont-bold mt-2">Nombre completo</label>
-                    <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
-                        <input
-                            type="text"
-                            name="name"
-                            required
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            maxLength={45}
-                            style={inputBorderStyle}
-                            className="bg-transparent border-3 p-3 w-full rounded-full text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all pl-10 shadow-inner"
-                        />
-                    </div>
-                </div>
-
-                {/* Campo DNI (OBLIGATORIO) */}
-                <div className="">
-                    <label className="block text-white text-md font-medium font-mont-bold mt-2">DNI</label>
-                    <div className="relative">
-                        <Scan className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
-                        <input
-                            type="text"
-                            name="dni"
-                            value={dni}
-                            onChange={(e) => setDni(e.target.value)}
-                            maxLength={11}
-                            required
-                            style={inputBorderStyle}
-                            className="bg-transparent border-3 p-3 w-full rounded-full text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all pl-10 shadow-inner"
-                        />
-                    </div>
-                </div>
-
-                {/* Campo VOUCHER ID (AHORA OBLIGATORIO) */}
-                <div className="">
-                    <label className="block text-white text-md font-medium font-mont-bold mt-2">Número de Comprobante</label>
-                    <div className="relative">
-                        <Scan className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
-                        <input
-                            type="text"
-                            name="voucher_number"
-                            value={voucherNumber}
-                            onChange={(e) => setVoucherNumber(e.target.value)}
-                            maxLength={20}
-                            required
-                            style={inputBorderStyle}
-                            className="bg-transparent border-3 p-3 w-full rounded-full text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all pl-10 shadow-inner"
-                        />
-                    </div>
-                </div>
-
-                {/* Campo Teléfono */}
-                <div className="">
-                    <label className="block text-white text-md font-medium font-mont-bold mt-2">Número de teléfono</label>
-                    <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
-                        <input
-                            type="tel"
-                            name="phone_number"
-                            required
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            maxLength={9}
-                            style={inputBorderStyle}
-                            className="bg-transparent border-3 p-3 w-full rounded-full text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all pl-10 shadow-inner"
-                        />
-                    </div>
-                </div>
-
-                {/* Campo Foto */}
-                <div className="space-y-1">
-                    <label className="block text-white text-md font-medium font-mont-bold mt-2">Comprobante / Foto</label>
-                    <input
-                        type="file"
-                        name="photo_url"
-                        accept="image/*"
-                        required
-                        onChange={handleFileChange}
-                        // 💡 ESTILO FILE INPUT: Botón con fondo verde predefinido
-                        className="w-full text-white/90 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-green-600"
-                    />
-
-                    {/* Preview cuadrado con loader */}
-                    {preview && (
-                        <div className="relative w-32 h-32 border rounded-xl overflow-hidden mx-auto mt-4 shadow-md border-green-500">
-                            <img src={preview} alt="preview" className="object-cover w-full h-full" />
-                            {compressing && (
-                                <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
-                                    <Loader2 className="animate-spin w-8 h-8 text-white" />
-                                </div>
-                            )}
-                            {compressedFile && !compressing && (
-                                <p className="absolute bottom-0 right-0 text-xs bg-gray-800 text-white p-1 rounded-tl-lg">
-                                    {`${(compressedFile.size / 1024).toFixed(1)} KB`}
-                                </p>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-            </form>
-
-            {/* BARRA FIJA INFERIOR PARA EL BOTÓN EN MÓVIL */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-transparent border-none z-20">
-                <button
-                    type="submit"
-                    form="registrationForm" // <-- Vincula el botón al formulario por ID
-                    disabled={isDisabled}
-                    style={{ ...neonGlowStyle, ...inputBorderStyle }}
-                    // 💡 ESTILO BOTÓN: Usamos los estilos NEON y la clase para el texto y tamaño
-                    className={`bg-transparent font-teko rounded-full text-5xl sm:text-2xl text-white p-3 w-50 max-w-md font-semibold transition-opacity duration-200 shadow-xl mx-auto block
-                border-2 hover:opacity-80 disabled:opacity-50`}
-                >
-                    {loading ? "ENVIANDO..." : "ENVIAR"}
-                </button>
             </div>
 
-            {/* 2. 💡 COMPONENTE MODAL DE TÉRMINOS Y CONDICIONES */}
-            {showTermsModal && (
-                // Overlay: Usa el fondo negro con blur para mantener el estilo oscuro.
-                <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            {/* === RULETA === */}
+            <div className="relative z-10 w-80 h-80 sm:w-96 sm:h-96">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-30">
+                    <div className="w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[40px] border-t-gray-800 drop-shadow-lg"></div>
+                </div>
 
-                    {/* Contenido del Modal */}
-                    <div
-                        className="bg-black border border-3 rounded-4xl p-6 pt-4 w-full max-w-md max-h-[90vh] flex flex-col relative shadow-2xl"
-                        style={neonGlowStyle} // Aplicamos el glow neón al modal
-                    >
+                <div className="w-full h-full rounded-full bg-white p-2 shadow-2xl">
+                    <div className="w-full h-full rounded-full relative overflow-hidden border-4 border-gray-800" style={wheelStyle}>
+                        <div className="absolute inset-0 w-full h-full">
+                            {activePrizes.map((prize, index) => {
+                                const totalSegments = activePrizes.length;
+                                const segmentAngle = 360 / totalSegments;
+                                const rotateSegment = index * segmentAngle;
+                                const isWinner = winningId === prize.id;
 
-                        {/* Botón de Cerrar (X) en la esquina */}
-                        <button
-                            onClick={handleCloseModal}
-                            className="absolute top-3 right-3 text-white hover:text-green-500 transition-colors"
-                            aria-label="Cerrar términos y condiciones"
-                        >
-                            <X size={24} />
-                        </button>
-
-                        {/* Título */}
-
-
-                        {/* Contenido Desplazable */}
-                        <div className="flex-grow overflow-y-auto text-white text-sm space-y-1 pb-4 pr-2">
-
-                            <p className="font-mont-medium text-white p-1">
-                                Promoción válida del 04 de diciembre al 31 de enero del 2026.
-                                Mecánica: Participan personas naturales mayores de 18 años,
-                                con residencia legal y domicilio en el territorio nacional del
-                                Perú, que realice la compra de Coca-Cola, en las tiendas seleccionadas ; para participar de la promoción MONSTER
-                                CAMPAÑA OXXO, deberás comprar 2 latas de monster y
-                                podrás escanear el código QR ubicado en las tiendas autorizadas, llenar los datos de tu boucher, subir su foto y entras al
-                                sorteo por diferentes premios. El horario para ingresar a la
-                                landing page será en los horarios de atención de las tiendas
-                                OXXO .
-                            </p>
-                            <p className="font-mont-medium text-white p-1">
-                                Los premios son Gaming keyboard/mouse, Mon Turtle beach
-                                Gaming Headset y Sillas gamer .
-                                Modalidad de entrega de premios: Se entregarán los premios
-                                previo sorteo entre los registrados ; y se coordinará con el
-                                cliente el recojo de su premio en las oficinas de Coca-Cola en
-                                Av. República de Panamá 4050, Surquillo.
-                            </p>
-
-
-                            
+                                return (
+                                    <div
+                                        key={prize.id}
+                                        className={`absolute w-1/2 h-1/2 top-0 right-0 origin-bottom-left flex items-center justify-center border-l-2 border-b-2 border-gray-300 transition-colors duration-300
+                                            ${isWinner ? 'bg-yellow-400 !border-yellow-600 z-50' : prize.color}
+                                        `}
+                                        style={{ transform: `rotate(${rotateSegment}deg) skewY(${totalSegments === 4 ? 0 : 0}deg)` }}
+                                    >
+                                        <div 
+                                            className={`flex flex-col items-center justify-center transform translate-x-4 translate-y-4 transition-transform duration-500
+                                                ${isWinner ? 'scale-125' : 'scale-100'}
+                                            `}
+                                            style={{ transform: `rotate(45deg)`, width: '100px' }}
+                                        >
+                                            {prize.icon}
+                                            <span className={`text-xs font-bold uppercase mt-1 text-center leading-none ${isWinner ? 'text-black text-sm' : ''}`}>
+                                                {prize.label}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
+                    </div>
+                </div>
 
-                        {/* Botón de Continuar */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+                    <button
+                        onClick={onSpinClick}
+                        disabled={isSpinning || loading || !storeId}
+                        className={`
+                            w-20 h-20 rounded-full bg-gray-800 border-4 border-white text-white font-black text-xl shadow-lg
+                            flex items-center justify-center transition-transform hover:scale-105 active:scale-95
+                            ${isSpinning ? 'opacity-90 cursor-default' : 'animate-pulse cursor-pointer'}
+                        `}
+                    >
+                        {loading ? <span className="text-xs">...</span> : "GO!"}
+                    </button>
+                </div>
+            </div>
+
+            {/* === NAVBAR INFERIOR === */}
+            <div className="z-20 mt-8 flex items-center gap-4">
+                
+                {/* Botón JUGAR (Activo) */}
+                <button 
+                    className="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-blue-900 font-black shadow-lg transform transition-transform active:scale-95 border-2 border-transparent"
+                >
+                    <Gamepad2 size={24} />
+                    <span>JUGAR</span>
+                </button>
+
+                {/* Botón SETTINGS (Secundario) */}
+                <button 
+                    onClick={() => navigate('/tiendas')}
+                    className="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-white border-2 border-white/30 shadow-lg transform transition-transform active:scale-95 hover:bg-white/30"
+                >
+                    <Settings size={24} />
+                </button>
+
+            </div>
+
+            {message && (
+                <div className="mt-4 z-20 bg-white/90 text-red-600 px-4 py-2 rounded-lg font-bold shadow-lg text-center mx-4">
+                    {message}
+                </div>
+            )}
+
+            {showTermsModal && (
+                <div className="fixed inset-0 bg-gray-900/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                     <div className="bg-white rounded-3xl p-6 w-full max-w-md max-h-[85vh] flex flex-col shadow-2xl">
+                        <div className="flex justify-between items-center mb-4 border-b pb-2">
+                            <h2 className="text-2xl font-black text-gray-800 uppercase italic">Términos y Condiciones</h2>
+                            <button onClick={() => setShowTermsModal(false)} className="text-gray-500 hover:text-red-500">
+                                <X size={28} />
+                            </button>
+                        </div>
+                        <div className="flex-grow overflow-y-auto text-gray-600 text-sm space-y-3 pr-2 scrollbar-thin scrollbar-thumb-orange-500">
+                            <p><strong>Vigencia:</strong> Hasta el 31 de enero del 2026.</p>
+                            <p><strong>Mecánica:</strong> Compra 2 latas de Monster en OXXO, escanea el QR y gana.</p>
+                            <p><strong>Premios:</strong> Teclados, Mouses, Headsets y Sillas Gamer.</p>
+                            <p><strong>Nota:</strong> Guarda tu comprobante físico para reclamar.</p>
+                        </div>
                         <button
-                            onClick={handleCloseModal}
-                            style={neonGlowStyle}
-                            className="mt-4 bg-transparent border-2 rounded-full text-2xl text-white p-3 font-teko hover:opacity-80 transition-opacity shadow-lg"
+                            onClick={() => setShowTermsModal(false)}
+                            className="mt-4 w-full py-3 rounded-xl text-white font-bold text-xl shadow-md transition-transform active:scale-95"
+                            style={{ backgroundColor: BRAND_ORANGE }}
                         >
-                            CONTINUAR
+                            ACEPTAR
                         </button>
-
                     </div>
                 </div>
             )}

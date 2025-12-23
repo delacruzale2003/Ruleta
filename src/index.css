@@ -32,6 +32,13 @@
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: 'Amigos';
+  src: url('./assets/Amigos.otf') format('opentype');
+  font-weight: 400; /* Bold */
+  font-style: normal;
+  font-display: swap;
+}
 
 /* Montserrat-ExtraBold (Peso 800) */
 @font-face {
@@ -99,6 +106,10 @@
 }
 .font-teko {
   font-family: 'Teko', sans-serif;
+  font-weight: 400;
+}
+.font-amigos {
+  font-family: 'Amigos', sans-serif;
   font-weight: 400;
 }
 /* =======================================
