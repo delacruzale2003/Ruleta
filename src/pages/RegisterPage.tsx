@@ -131,7 +131,7 @@ const RegisterPage: React.FC = () => {
                                         style={{ transform: `rotate(${rotateSegment}deg) skewY(${totalSegments === 4 ? 0 : 0}deg)` }}
                                     >
                                         <div 
-                                            className={`flex flex-col items-center justify-center transform translate-x-4 translate-y-4 transition-transform duration-500
+                                            className={`flex flex-col items-center justify-center transform translate-x-1 translate-y-1 transition-transform duration-500
                                                 ${isWinner ? 'scale-125' : 'scale-100'}
                                             `}
                                             style={{ transform: `rotate(45deg)`, width: '100px' }}
