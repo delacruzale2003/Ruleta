@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import RegisterPage from './pages/Ruleta';
+import RegisterPage from './pages/RegisterPage';
 import ExitPage from './pages/ExitPage';
  // Asumo que este es tu componente
 import './App.css';
