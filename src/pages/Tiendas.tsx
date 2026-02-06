@@ -52,7 +52,7 @@ export default function Tienda() {
     const [editingLoading, setEditingLoading] = useState(false);
     const [selectedStore, setSelectedStore] = useState<Store | null>(null);
     
-    const prizeOptions = ["Abanico", "Pelota Inflable", "Frisbee", "Silla", "Manta", "Sombrilla" , "Flotador aro rosado" , "Bestway", "Tomatodo", "Ventilador de piso" , "Dispensador de vidrio" , "Volantes"];
+    const prizeOptions = ["Abanico", "Pelota Inflable", "Frisbee", "Silla", "Manta", "Sombrilla" , "Flotador aro rosado" , "Bestway", "Tomatodo", "Ventilador de piso" , "Dispensador de vidrio" , "Volantes", "Neceser Impermeable", "Bola de Playa", "Ventilador portatil"];
 
     // --- FUNCIONES CORE ---
 
