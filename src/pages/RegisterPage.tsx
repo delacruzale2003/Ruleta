@@ -85,7 +85,7 @@ const RegisterPage: React.FC = () => {
                 {/* IMAGEN DE FONDO (Ruleta) */}
                 {/* Aquí cambiamos entre la estática y el GIF */}
                 <img 
-                    src={showGif ? "/ruleta1.gif" : "/ruleta1.png"} 
+                    src={showGif ? "/ruleta.gif" : "/ruletanew.png"} 
                     alt="Ruleta" 
                     className="w-full h-full object-contain drop-shadow-2xl"
                 />
@@ -169,7 +169,7 @@ const RegisterPage: React.FC = () => {
                         </button>
                     </div>
                     <div className="flex-grow overflow-y-auto text-gray-600 text-sm space-y-3 pr-2 scrollbar-thin scrollbar-thumb-orange-500">
-                        <p><strong>Vigencia:</strong> Hasta el 31 de enero del 2026.</p>
+                        <p><strong>Vigencia:</strong> Hasta el 28 de febrero del 2026.</p>
                         </div>
                     <button
                         onClick={() => setShowTermsModal(false)}
