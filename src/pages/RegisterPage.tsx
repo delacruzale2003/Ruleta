@@ -85,7 +85,7 @@ const RegisterPage: React.FC = () => {
                 {/* IMAGEN DE FONDO (Ruleta) */}
                 {/* Aquí cambiamos entre la estática y el GIF */}
                 <img 
-                    src={showGif ? "/ruleta.gif" : "/ruletanew.png"} 
+                    src={showGif ? "/ruletanew.gif" : "/ruletanew.png"} 
                     alt="Ruleta" 
                     className="w-full h-full object-contain drop-shadow-2xl"
                 />
